@@ -1,6 +1,5 @@
 gradio==4.44
 requests==2.31.0
 python-dotenv==1.0.0
-llama-index==0.10.0
-llama-index-agent-openai==0.1.4
-llama-index-llms-openrouter==0.1.2 
+llama-index==0.12.21
+llama-index-llms-openrouter==0.3.1

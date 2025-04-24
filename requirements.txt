@@ -3,3 +3,4 @@ requests==2.31.0
 python-dotenv==1.0.0
 llama-index==0.12.21
 llama-index-llms-openrouter==0.3.1
+duckduckgo-search==8.0.1

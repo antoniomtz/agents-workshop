@@ -18,6 +18,11 @@ MODEL = "meta-llama/llama-4-maverick:free"
 def chat_with_openrouter(message, history):
     # Prepare the conversation history in the format expected by the API
     messages = []
+
+    messages.append({
+        "role": "system",
+        "content": "You are helpful assistant that can answer questions and help with tasks."
+    })
     
     # Add conversation history
     for human, assistant in history:

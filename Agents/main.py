@@ -9,6 +9,7 @@ from typing import Dict, Any, List
 from llama_index.llms.openrouter import OpenRouter
 from llama_index.core.agent import ReActAgent
 from llama_index.core.tools import FunctionTool
+from llama_index.core import PromptTemplate
 
 # Load environment variables
 load_dotenv()
@@ -69,6 +70,35 @@ def init_agent():
         llm=llm,
         verbose=True
     )
+    # --- Add personality without overwriting core instructions ---
+
+    # 1. Get the default prompts
+    prompt_dict = agent.get_prompts()
+    default_system_prompt_tmpl = prompt_dict.get("agent_worker:system_prompt", None)
+    if default_system_prompt_tmpl:
+        # 2. Define your custom personality/instructions
+        custom_personality = """
+        You are CryptoBot, a friendly and slightly enthusiastic assistant specializing in cryptocurrency prices.
+        Always be helpful and provide clear price information using your tools.
+        Remember to stay positive! ✨
+        Do not provide financial advice, just the facts with a smile!
+        --- (Existing instructions below) ---
+        """
+        # 3. Get the default template string
+        default_template_str = default_system_prompt_tmpl.template
+
+        # 4. Prepend your personality to the default template
+        new_template_str = custom_personality + "\n" + default_template_str
+
+        # 5. Create a new PromptTemplate
+        updated_system_prompt = PromptTemplate(new_template_str)
+
+        # 6. Update the agent's prompts
+        agent.update_prompts({"agent_worker:system_prompt": updated_system_prompt})
+        print("✅ Successfully updated agent system prompt with personality.") # Optional: confirmation
+    else:
+        print("⚠️ Could not retrieve default system prompt to modify.") # Optional: error handling
+
     return agent
 
 agent = init_agent()
@@ -101,7 +131,8 @@ demo = gr.ChatInterface(
     examples=[ 
         "What's the current price of bitcoin?",
         "What's the price of Doge?",
-        "Compare the price of ethereum and solana"
+        "Compare the price of ethereum and solana",
+        "create a table with the top crypto prices"
     ],
     theme="soft"
 )
